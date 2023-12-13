@@ -1,3 +1,3 @@
 # 小张同学
-# www.zhangshichang.com
-# blog.zhangshichang.com
+# https://www.zhangshichang.com
+# https://blog.zhangshichang.com
