@@ -171,3 +171,46 @@ function closeWeChatModal() {
 		modal.style.display = 'none';
 	}, 300);
 }
+
+(function () {
+	var modal = document.getElementById('aboutModal');
+	var trigger = document.getElementById('aboutTrigger');
+	if (!modal || !trigger) {
+		return;
+	}
+
+	var lastFocused = null;
+
+	function openAboutModal(event) {
+		event.preventDefault();
+		lastFocused = document.activeElement;
+		modal.classList.add('is-open');
+		modal.setAttribute('aria-hidden', 'false');
+		document.body.style.overflow = 'hidden';
+		var closeBtn = modal.querySelector('.about-modal__close');
+		if (closeBtn) {
+			closeBtn.focus();
+		}
+	}
+
+	function closeAboutModal() {
+		modal.classList.remove('is-open');
+		modal.setAttribute('aria-hidden', 'true');
+		document.body.style.overflow = '';
+		if (lastFocused) {
+			lastFocused.focus();
+		}
+	}
+
+	trigger.addEventListener('click', openAboutModal);
+	modal.addEventListener('click', function (event) {
+		if (event.target.hasAttribute('data-close') || event.target.closest('[data-close]')) {
+			closeAboutModal();
+		}
+	});
+	document.addEventListener('keydown', function (event) {
+		if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+			closeAboutModal();
+		}
+	});
+})();

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="小张同学的博客：记录前端、设计与生活。" />
+    <meta name="keywords" content="博客,前端,编程,设计,小张同学" />
+    <meta name="author" content="小张同学" />
+    <title>博客 · 小张同学</title>
+    <link rel="apple-touch-icon" href="../assets/images/512.png">
+    <link rel="icon" href="../favicon.ico">
+    <style>
+        :root {
+            --accent: #4e97d8;
+            --accent-deep: #2f7cbe;
+            --accent-soft: #eef6fe;
+            --ink: #16202e;
+            --text: #516078;
+            --muted: #8b97a9;
+            --line: #e7ecf3;
+            --bg: #fbfcfe;
+            --radius: 16px;
+            --shadow: 0 18px 45px rgba(23, 43, 77, .08);
+            --font: "ff-tisa-web-pro-1", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        ::selection {
+            background: rgba(78, 151, 216, .22);
+        }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 200;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width .1s linear;
+        }
+
+        /* ---------- 顶部导航 ---------- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(251, 252, 254, .86);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .site-header__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+            max-width: 1040px;
+            height: 60px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .brand {
+            flex-shrink: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            color: var(--ink);
+        }
+
+        .site-nav {
+            display: flex;
+            gap: 6px;
+            font-size: .88rem;
+        }
+
+        .site-nav a {
+            padding: 6px 12px;
+            border-radius: 999px;
+            color: var(--text);
+            transition: color .25s ease, background .25s ease;
+        }
+
+        .site-nav a:hover {
+            color: var(--accent-deep);
+            background: var(--accent-soft);
+        }
+
+        .site-nav a.is-active {
+            color: var(--accent-deep);
+            background: var(--accent-soft);
+        }
+
+        /* ---------- 页面容器 ---------- */
+        .page {
+            width: 100%;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .page-head {
+            padding: 68px 0 34px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .eyebrow {
+            margin-bottom: 10px;
+            font-size: 11px;
+            letter-spacing: .32em;
+            color: var(--accent);
+        }
+
+        .page-head h1 {
+            font-size: clamp(1.9rem, 4.5vw, 2.4rem);
+            font-weight: 600;
+            letter-spacing: .04em;
+            line-height: 1.35;
+            color: var(--ink);
+        }
+
+        .page-head__desc {
+            max-width: 560px;
+            margin-top: 12px;
+            font-size: .92rem;
+            color: var(--muted);
+        }
+
+        /* ---------- 标签筛选 ---------- */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 28px 0 22px;
+        }
+
+        .chip {
+            padding: 5px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            font-family: inherit;
+            font-size: .8rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all .25s ease;
+        }
+
+        .chip:hover {
+            border-color: rgba(78, 151, 216, .45);
+            color: var(--accent-deep);
+        }
+
+        .chip.is-active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* ---------- 文章列表 ---------- */
+        .post-list {
+            padding-bottom: 72px;
+        }
+
+        .post-item {
+            display: block;
+            margin-bottom: 16px;
+            padding: 26px 28px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            transition: transform .4s cubic-bezier(.19, 1, .22, 1), border-color .35s ease, box-shadow .35s ease;
+        }
+
+        .post-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(78, 151, 216, .4);
+            box-shadow: var(--shadow);
+        }
+
+        .post-item__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: .76rem;
+            letter-spacing: .06em;
+            color: var(--muted);
+        }
+
+        .post-item__meta span::before {
+            content: "\00b7";
+            margin-right: 10px;
+        }
+
+        .post-item__title {
+            margin: 10px 0 8px;
+            font-size: 1.18rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--ink);
+            transition: color .25s ease;
+        }
+
+        .post-item:hover .post-item__title {
+            color: var(--accent-deep);
+        }
+
+        .post-item__excerpt {
+            font-size: .9rem;
+            line-height: 1.9;
+            color: var(--text);
+        }
+
+        .post-item__tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .post-item__tags li {
+            padding: 3px 10px;
+            border-radius: 5px;
+            background: #f3f7fc;
+            font-size: .74rem;
+            color: #6b7a90;
+        }
+
+        .state {
+            padding: 48px 10px;
+            text-align: center;
+            font-size: .9rem;
+            color: var(--muted);
+        }
+
+        .state a {
+            color: var(--accent-deep);
+        }
+
+        /* ---------- 文章详情 ---------- */
+        .back-link {
+            display: inline-block;
+            margin-top: 32px;
+            font-size: .86rem;
+            color: var(--accent-deep);
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .article-head {
+            padding: 22px 0 28px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .article-meta {
+            font-size: .78rem;
+            letter-spacing: .08em;
+            color: var(--muted);
+        }
+
+        .article-title {
+            margin: 10px 0 14px;
+            font-size: clamp(1.65rem, 4vw, 2.2rem);
+            font-weight: 600;
+            line-height: 1.45;
+            letter-spacing: .02em;
+            color: var(--ink);
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .article-tags span {
+            padding: 3px 10px;
+            border-radius: 5px;
+            background: var(--accent-soft);
+            font-size: .74rem;
+            color: var(--accent-deep);
+        }
+
+        .markdown {
+            padding: 8px 0 40px;
+            font-size: 1rem;
+            line-height: 1.95;
+            color: #445268;
+            word-wrap: break-word;
+        }
+
+        .markdown> :first-child {
+            margin-top: 1.6em;
+        }
+
+        .markdown p {
+            margin: 1.15em 0;
+        }
+
+        .markdown h2 {
+            margin: 2.2em 0 .8em;
+            padding-bottom: .4em;
+            border-bottom: 1px solid var(--line);
+            font-size: 1.32rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--ink);
+        }
+
+        .markdown h3 {
+            margin: 1.8em 0 .6em;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .markdown h4 {
+            margin: 1.5em 0 .5em;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .markdown a {
+            color: var(--accent-deep);
+            border-bottom: 1px solid rgba(78, 151, 216, .35);
+        }
+
+        .markdown a:hover {
+            border-bottom-color: var(--accent-deep);
+        }
+
+        .markdown strong {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .markdown ul,
+        .markdown ol {
+            margin: 1.1em 0;
+            padding-left: 1.5em;
+        }
+
+        .markdown ul {
+            list-style: disc;
+        }
+
+        .markdown ol {
+            list-style: decimal;
+        }
+
+        .markdown li {
+            margin: .45em 0;
+        }
+
+        .markdown blockquote {
+            margin: 1.6em 0;
+            padding: 14px 20px;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            background: #f4f9fe;
+            color: #516078;
+        }
+
+        .markdown blockquote p {
+            margin: .3em 0;
+        }
+
+        .markdown code {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #eef2f7;
+            font-family: var(--mono);
+            font-size: .86em;
+            color: #b4552d;
+        }
+
+        .markdown pre {
+            margin: 1.5em 0;
+            padding: 20px 22px;
+            border-radius: 12px;
+            background: #111a26;
+            color: #dfe7f2;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
+
+        .markdown pre code {
+            padding: 0;
+            background: none;
+            font-size: .84em;
+            color: inherit;
+        }
+
+        .markdown table {
+            width: 100%;
+            margin: 1.6em 0;
+            border-collapse: collapse;
+            font-size: .88em;
+        }
+
+        .markdown th,
+        .markdown td {
+            padding: 10px 13px;
+            border: 1px solid var(--line);
+            text-align: left;
+        }
+
+        .markdown th {
+            background: #f4f7fb;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .markdown img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .markdown hr {
+            margin: 2.2em 0;
+            border: 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .post-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0 80px;
+            padding-top: 28px;
+            border-top: 1px solid var(--line);
+        }
+
+        .post-nav a {
+            display: block;
+            padding: 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            transition: border-color .3s ease, transform .3s ease;
+        }
+
+        .post-nav a:hover {
+            border-color: rgba(78, 151, 216, .45);
+            transform: translateY(-2px);
+        }
+
+        .post-nav span {
+            display: block;
+            font-size: .72rem;
+            letter-spacing: .12em;
+            color: var(--muted);
+        }
+
+        .post-nav strong {
+            display: block;
+            margin-top: 5px;
+            font-size: .9rem;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        .post-nav .next {
+            grid-column: 2;
+            text-align: right;
+        }
+
+        /* ---------- 页脚 ---------- */
+        .site-footer {
+            padding: 34px 24px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+            font-size: .8rem;
+            color: var(--muted);
+        }
+
+        .site-footer a {
+            color: var(--accent-deep);
+        }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- 响应式 ---------- */
+        @media (max-width: 620px) {
+            body {
+                font-size: 15px;
+            }
+
+            .site-header__inner {
+                height: 56px;
+                padding: 0 18px;
+            }
+
+            .site-nav {
+                gap: 2px;
+                font-size: .8rem;
+            }
+
+            .site-nav a {
+                padding: 5px 8px;
+            }
+
+            .page {
+                padding: 0 18px;
+            }
+
+            .page-head {
+                padding: 48px 0 26px;
+            }
+
+            .post-item {
+                padding: 20px;
+            }
+
+            .post-item__title {
+                font-size: 1.08rem;
+            }
+
+            .markdown {
+                font-size: .96rem;
+            }
+
+            .markdown pre {
+                padding: 16px 16px;
+            }
+
+            .post-nav {
+                grid-template-columns: 1fr;
+                margin-bottom: 56px;
+            }
+
+            .post-nav .next {
+                grid-column: 1;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .site-header__inner {
+                gap: 10px;
+                padding: 0 14px;
+            }
+
+            .brand {
+                font-size: .92rem;
+                letter-spacing: .04em;
+            }
+
+            .site-nav {
+                gap: 0;
+                font-size: .76rem;
+            }
+
+            .site-nav a {
+                padding: 5px 7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .post-item,
+            .post-nav a {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress" id="progress"></div>
+
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a class="brand" href="/">小张同学</a>
+            <nav class="site-nav" aria-label="主导航">
+                <a href="/">首页</a>
+                <a href="/blog/" class="is-active">博客</a>
+                <a href="/music/">音乐</a>
+                <a href="https://github.com/zsc620/" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page">
+        <section id="listView">
+            <div class="page-head">
+                <p class="eyebrow">BLOG</p>
+                <h1>写点东西</h1>
+                <p class="page-head__desc">关于前端、设计与生活的记录。没有固定更新频率，有想说的就写。</p>
+            </div>
+            <div class="filters" id="tagFilter" aria-label="按标签筛选"></div>
+            <div class="post-list" id="postList" aria-live="polite">
+                <p class="state">正在加载文章…</p>
+            </div>
+        </section>
+
+        <article id="postView" hidden>
+            <a class="back-link" href="#/">← 返回文章列表</a>
+            <header class="article-head">
+                <p class="article-meta" id="postMeta"></p>
+                <h1 class="article-title" id="postTitle"></h1>
+                <div class="article-tags" id="postTags"></div>
+            </header>
+            <div class="markdown" id="postContent"></div>
+            <nav class="post-nav" id="postNav" aria-label="文章导航"></nav>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright © 2021-<span id="year">2026</span> &amp; Made by 小张同学 · <a href="/">返回首页</a></p>
+    </footer>
+
+    <script src="./js/marked.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            var state = {
+                posts: [],
+                activeTag: '全部',
+                loaded: false
+            };
+
+            var listView = document.getElementById('listView');
+            var postView = document.getElementById('postView');
+            var tagFilter = document.getElementById('tagFilter');
+            var postList = document.getElementById('postList');
+            var postMeta = document.getElementById('postMeta');
+            var postTitle = document.getElementById('postTitle');
+            var postTags = document.getElementById('postTags');
+            var postContent = document.getElementById('postContent');
+            var postNav = document.getElementById('postNav');
+            var progress = document.getElementById('progress');
+            var yearEl = document.getElementById('year');
+
+            if (yearEl) {
+                yearEl.textContent = new Date().getFullYear();
+            }
+
+            if (typeof marked !== 'undefined' && typeof marked.setOptions === 'function') {
+                marked.setOptions({ gfm: true, breaks: false });
+            }
+
+            function escapeHtml(value) {
+                return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[ch];
+                });
+            }
+
+            function formatDate(value) {
+                return escapeHtml(String(value || '').replace(/-/g, '.'));
+            }
+
+            function sortedPosts() {
+                return state.posts.slice().sort(function (a, b) {
+                    return String(b.date || '').localeCompare(String(a.date || ''));
+                });
+            }
+
+            function renderFilters() {
+                var tags = ['全部'];
+                state.posts.forEach(function (post) {
+                    (post.tags || []).forEach(function (tag) {
+                        if (tags.indexOf(tag) === -1) {
+                            tags.push(tag);
+                        }
+                    });
+                });
+                tagFilter.innerHTML = tags.map(function (tag) {
+                    return '<button type="button" class="chip' + (tag === state.activeTag ? ' is-active' : '') +
+                        '" data-tag="' + escapeHtml(tag) + '">' + escapeHtml(tag) + '</button>';
+                }).join('');
+            }
+
+            function renderList() {
+                var posts = sortedPosts();
+                if (state.activeTag !== '全部') {
+                    posts = posts.filter(function (post) {
+                        return (post.tags || []).indexOf(state.activeTag) !== -1;
+                    });
+                }
+
+                if (!posts.length) {
+                    postList.innerHTML = '<p class="state">这个标签下还没有文章。</p>';
+                    return;
+                }
+
+                postList.innerHTML = posts.map(function (post) {
+                    var tags = (post.tags || []).map(function (tag) {
+                        return '<li>' + escapeHtml(tag) + '</li>';
+                    }).join('');
+                    return '<a class="post-item" href="#/post/' + encodeURIComponent(post.slug) + '">' +
+                        '<div class="post-item__meta"><time datetime="' + escapeHtml(post.date) + '">' + formatDate(post.date) +
+                        '</time><span>' + escapeHtml(post.minutes || 1) + ' 分钟阅读</span></div>' +
+                        '<h2 class="post-item__title">' + escapeHtml(post.title) + '</h2>' +
+                        '<p class="post-item__excerpt">' + escapeHtml(post.excerpt) + '</p>' +
+                        (tags ? '<ul class="post-item__tags">' + tags + '</ul>' : '') +
+                        '</a>';
+                }).join('');
+            }
+
+            function showList() {
+                postView.hidden = true;
+                listView.hidden = false;
+                document.title = '博客 · 小张同学';
+                progress.style.width = '0';
+                window.scrollTo(0, 0);
+            }
+
+            function renderPostNav(post) {
+                var posts = sortedPosts();
+                var index = -1;
+                posts.forEach(function (item, i) {
+                    if (item.slug === post.slug) {
+                        index = i;
+                    }
+                });
+
+                var prev = index > 0 ? posts[index - 1] : null;
+                var next = index > -1 && index < posts.length - 1 ? posts[index + 1] : null;
+                var html = '';
+
+                if (prev) {
+                    html += '<a href="#/post/' + encodeURIComponent(prev.slug) + '"><span>上一篇</span><strong>' +
+                        escapeHtml(prev.title) + '</strong></a>';
+                } else {
+                    html += '<span></span>';
+                }
+
+                if (next) {
+                    html += '<a class="next" href="#/post/' + encodeURIComponent(next.slug) + '"><span>下一篇</span><strong>' +
+                        escapeHtml(next.title) + '</strong></a>';
+                }
+
+                postNav.innerHTML = html;
+            }
+
+            function renderPostError(message) {
+                postMeta.textContent = '';
+                postTitle.textContent = '文章不存在';
+                postTags.innerHTML = '';
+                postNav.innerHTML = '';
+                postContent.innerHTML = '<p class="state">' + escapeHtml(message) +
+                    '<br><a href="#/">返回文章列表</a></p>';
+            }
+
+            function showPost(slug) {
+                var post = null;
+                state.posts.forEach(function (item) {
+                    if (item.slug === slug) {
+                        post = item;
+                    }
+                });
+
+                listView.hidden = true;
+                postView.hidden = false;
+                window.scrollTo(0, 0);
+
+                if (!post) {
+                    document.title = '文章不存在 · 小张同学';
+                    renderPostError('这篇文章可能已被移动或删除。');
+                    return;
+                }
+
+                document.title = post.title + ' · 小张同学';
+                postMeta.textContent = formatDate(post.date) + ' · ' + (post.minutes || 1) + ' 分钟阅读';
+                postTitle.textContent = post.title;
+                postTags.innerHTML = (post.tags || []).map(function (tag) {
+                    return '<span>' + escapeHtml(tag) + '</span>';
+                }).join('');
+                postContent.innerHTML = '<p class="state">正在加载文章…</p>';
+                postNav.innerHTML = '';
+
+                fetch(post.file, { cache: 'no-store' })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('HTTP ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(function (markdown) {
+                        if (typeof marked === 'undefined') {
+                            throw new Error('Markdown 渲染库未加载');
+                        }
+                        postContent.innerHTML = marked.parse(markdown);
+                        renderPostNav(post);
+                    })
+                    .catch(function (error) {
+                        postContent.innerHTML = '<p class="state">文章加载失败：' + escapeHtml(error.message) +
+                            '<br>若是本地直接双击打开页面，请改用本地 HTTP 服务器访问。</p>';
+                    });
+            }
+
+            function route() {
+                if (!state.loaded) {
+                    return;
+                }
+                var hash = location.hash.replace(/^#\/?/, '');
+                if (hash.indexOf('post/') === 0) {
+                    showPost(decodeURIComponent(hash.slice(5)));
+                } else {
+                    showList();
+                    renderFilters();
+                    renderList();
+                }
+            }
+
+            tagFilter.addEventListener('click', function (event) {
+                var button = event.target.closest('button[data-tag]');
+                if (!button) {
+                    return;
+                }
+                state.activeTag = button.getAttribute('data-tag');
+                renderFilters();
+                renderList();
+            });
+
+            window.addEventListener('hashchange', route);
+
+            window.addEventListener('scroll', function () {
+                if (postView.hidden) {
+                    return;
+                }
+                var doc = document.documentElement;
+                var max = doc.scrollHeight - doc.clientHeight;
+                progress.style.width = (max > 0 ? (doc.scrollTop / max) * 100 : 0) + '%';
+            }, { passive: true });
+
+            fetch('posts.json', { cache: 'no-store' })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function (posts) {
+                    state.posts = Array.isArray(posts) ? posts : [];
+                    state.loaded = true;
+                    renderFilters();
+                    renderList();
+                    route();
+                })
+                .catch(function (error) {
+                    postList.innerHTML = '<p class="state">文章列表加载失败：' + escapeHtml(error.message) +
+                        '<br>若是本地直接双击打开页面，请改用本地 HTTP 服务器访问。</p>';
+                });
+        })();
+    </script>
+</body>
+
+</html>

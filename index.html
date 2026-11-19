@@ -16,6 +16,201 @@
     <link rel="stylesheet" type="text/css" href="./assets/css/wakatime-theme.css">
     <link rel="apple-touch-icon" href="./assets/images/512.png">
     <link rel="icon" href="./favicon.ico">
+    <style>
+        .about-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .3s ease, visibility .3s ease;
+        }
+
+        .about-modal.is-open {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .about-modal__backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(12, 18, 28, .62);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
+        .about-modal__panel {
+            position: relative;
+            width: 100%;
+            max-width: 540px;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            padding: 42px 40px 32px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .3);
+            text-align: left;
+            transform: translateY(16px) scale(.97);
+            transition: transform .35s cubic-bezier(.19, 1, .22, 1);
+        }
+
+        .about-modal.is-open .about-modal__panel {
+            transform: none;
+        }
+
+        .about-modal__close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            font-size: 22px;
+            line-height: 1;
+            color: #aab4c2;
+            cursor: pointer;
+            transition: color .25s ease;
+        }
+
+        .about-modal__close:hover {
+            color: #4e97d8;
+        }
+
+        .about-modal__eyebrow {
+            margin: 0 0 6px;
+            font-size: 11px;
+            letter-spacing: .28em;
+            color: #4e97d8;
+        }
+
+        .about-modal__title {
+            margin: 0 0 14px;
+            font-size: 1.5em;
+            font-weight: 500;
+            letter-spacing: .04em;
+            color: #1a2433;
+        }
+
+        .about-modal__intro {
+            margin: 0;
+            font-size: .92em;
+            line-height: 1.95;
+            color: #5a6779;
+        }
+
+        .about-block {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #eef1f6;
+        }
+
+        .about-block__label {
+            margin: 0 0 10px;
+            font-size: .72em;
+            letter-spacing: .18em;
+            color: #9aa6b6;
+        }
+
+        .about-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .about-chips li {
+            padding: 4px 11px;
+            border-radius: 6px;
+            background: #eef6fe;
+            font-size: .78em;
+            color: #2f7cbe;
+        }
+
+        .about-links {
+            margin: 0;
+        }
+
+        .about-links a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 2px;
+            border-bottom: 1px dashed #eef1f6;
+            font-size: .9em;
+            color: #33415a;
+            transition: color .25s ease;
+        }
+
+        .about-links a:last-child {
+            border-bottom: 0;
+        }
+
+        .about-links a::after {
+            content: "\2192";
+            color: #b7c2d1;
+            transition: transform .25s ease, color .25s ease;
+        }
+
+        .about-links a:hover {
+            color: #2f7cbe;
+        }
+
+        .about-links a:hover::after {
+            color: #4e97d8;
+            transform: translateX(4px);
+        }
+
+        .about-modal__contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #eef1f6;
+            font-size: .86em;
+        }
+
+        .about-modal__contact a {
+            color: #2f7cbe;
+        }
+
+        .about-modal__contact a:hover {
+            text-decoration: underline;
+        }
+
+        .about-modal__foot {
+            margin: 12px 0 0;
+            font-size: .75em;
+            color: #9aa6b6;
+        }
+
+        @media (max-width: 480px) {
+            .about-modal {
+                padding: 16px;
+            }
+
+            .about-modal__panel {
+                padding: 34px 22px 26px;
+                max-height: calc(100vh - 32px);
+            }
+
+            .about-modal__title {
+                font-size: 1.3em;
+            }
+
+            .about-modal__intro {
+                font-size: .88em;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -65,8 +260,7 @@
                                         <a href="/" class="blog-button">首页</a>
                                     </li>
                                     <li class="navigation__item">
-                                        <a href="https://" class="blog-button" target="_blank"
-                                            onclick="event.preventDefault();">博客</a>
+                                        <a href="/blog/" class="blog-button">博客</a>
                                     </li>
                                     <li class="navigation__item">
                                         <a href="https://zsc620.github.io/music" class="blog-button"
@@ -77,8 +271,8 @@
                                             onclick="event.preventDefault();">简历</a>
                                     </li>
                                     <li class="navigation__item">
-                                        <a href="https://" class="blog-button" target="_blank"
-                                            onclick="event.preventDefault();">关于</a>
+                                        <a href="#about" id="aboutTrigger" class="blog-button"
+                                            aria-haspopup="dialog">关于</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -104,6 +298,42 @@
             <p class="power">Copyright © 2021-2026 & Made by 小张同学</p>
         </div>
     </header>
+
+    <div class="about-modal" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle"
+        aria-hidden="true">
+        <div class="about-modal__backdrop" data-close></div>
+        <div class="about-modal__panel">
+            <button class="about-modal__close" type="button" aria-label="关闭" data-close>&times;</button>
+            <p class="about-modal__eyebrow">ABOUT</p>
+            <h2 class="about-modal__title" id="aboutModalTitle">关于我</h2>
+            <p class="about-modal__intro">我是小张同学,没事就爱写点屎代码,就这点玩意,没了</p>
+            <div class="about-block">
+                <p class="about-block__label">常用技术</p>
+                <ul class="about-chips">
+                    <li>Vue 3</li>
+                    <li>JavaScript</li>
+                    <li>Vite</li>
+                    <li>Threejs</li>
+                    <li>Cesium</li>
+                    <li>......</li>
+                </ul>
+            </div>
+            <div class="about-block">
+                <p class="about-block__label">站内逛逛</p>
+                <div class="about-links">
+                    <a href="/1024/" target="_blank" rel="noopener noreferrer">1024 程序员节</a>
+                    <a href="/tanchishe/" target="_blank" rel="noopener noreferrer">贪吃蛇小游戏</a>
+                    <a href="/music/" target="_blank" rel="noopener noreferrer">音乐播放器</a>
+                </div>
+            </div>
+            <div class="about-modal__contact">
+                <a href="https://github.com/zsc620/" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://github.com/zsc620/zsc620.github.io/issues" target="_blank" rel="noopener noreferrer">提个
+                    Issue</a>
+            </div>
+            <p class="about-modal__foot">本站自 2021 年存活至今</p>
+        </div>
+    </div>
 
     <script type="text/javascript" src="./assets/js/main.js"></script>
 </body>

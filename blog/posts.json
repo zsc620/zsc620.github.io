@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "abc",
+    "title": "写个毛文章,有这时间不如来把三角洲!!!!!",
+    "date": "2026-11-12",
+    "tags": ["三角洲"],
+    "excerpt": "猛攻!",
+    "file": "posts/abc.md",
+    "minutes": 4
+  }
+]
